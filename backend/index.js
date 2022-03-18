@@ -30,6 +30,36 @@ app.use(session(config));
 app.use(Express.static(path.join(__dirname, "../frontend/public")));
 
 const PORT = 443;
+
+const startServerEncrypted = async () => {
+  const sm = new SecretManagerServiceClient({
+    projectId: "programingforthecloud",
+    keyFilename: GOOGLE_APPLICATION_CREDENTIALS,
+  });
+
+  const [pub] = await sm.accessSecretVersion({
+    name: "projects/3469417017/secrets/PublicKey"
+  });
+
+  const [prvt] = await sm.accessSecretVersion({
+    name: "projects/3469417017/secrets/PrivateKey"
+  });
+
+  const sslOptions = {
+    key: prvt.payload.data.toString(),
+    cert: pub.payload.data.toString(),
+  };
+
+  https.createServer(sslOptions, app).listen(PORT, () => {
+    console.log("Secure Server Listening on port:" + PORT);
+  });
+};
+
+const startServer = () => {
+  app.listen(PORT, () => console.log("Server Listening on port: " + PORT));
+};
+
+
 let requests = 0;
 const secretToken = uuid();
 
@@ -83,4 +113,3 @@ app.post("/register", (req, res) => {
 
 //console.log(secretToken);
 
-app.listen(PORT, () => console.log("Server Listening on port: " + PORT));
