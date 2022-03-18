@@ -2,10 +2,14 @@ import Express from "express";
 import cors from "cors";
 import { v4 as uuid } from "uuid";
 import session from "express-session";
-import { CreateUser, GetUser } from "./db.js";
+import { CreateUser, GetUser, HashPassword, GOOGLE_APPLICATION_CREDENTIALS } from "./db.js";
 
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
+
+import https from "https";
+
+import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,7 +29,7 @@ app.use(session(config));
 
 app.use(Express.static(path.join(__dirname, "../frontend/public")));
 
-const PORT = 80;
+const PORT = 443;
 let requests = 0;
 const secretToken = uuid();
 
