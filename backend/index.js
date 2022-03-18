@@ -31,12 +31,12 @@ app.use(Express.static(path.join(__dirname, "../frontend/public")));
 
 const PORT = 443;
 
+
 const startServerEncrypted = async () => {
   const sm = new SecretManagerServiceClient({
     projectId: "programingforthecloud",
     keyFilename: GOOGLE_APPLICATION_CREDENTIALS,
   });
-
   const [pub] = await sm.accessSecretVersion({
     name: "projects/3469417017/secrets/PublicKey"
   });
@@ -111,5 +111,6 @@ app.post("/register", (req, res) => {
   });
 });
 
+startServerEncrypted();
 //console.log(secretToken);
 
